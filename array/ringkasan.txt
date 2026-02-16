@@ -1,0 +1,35 @@
+RINGKASAN TUGAS STRUKTUR DATA
+IMPLEMENTASI ADT ARRAY DAN SIMULASI GAME OF LIFE
+
+Tujuan
+Tugas ini bertujuan untuk memahami konsep Tipe Data Abstrak (ADT) Array serta penerapannya dalam sebuah simulasi. Array digunakan sebagai struktur data utama untuk menyimpan dan memproses keadaan sel pada permainan Game of Life.
+
+Konsep ADT Array
+ADT Array adalah struktur data yang menyimpan sekumpulan elemen dengan ukuran tetap. Setiap elemen diakses menggunakan indeks. Operasi dasar yang digunakan dalam implementasi ini meliputi:
+
+1. Membuat array dengan ukuran tertentu
+2. Mengakses elemen berdasarkan indeks
+3. Mengubah nilai elemen
+4. Mengosongkan isi array
+5. Menelusuri elemen array
+
+Konsep Game of Life
+Game of Life adalah simulasi berbasis grid yang terdiri dari sel hidup dan sel mati. Setiap sel akan berubah pada generasi berikutnya berdasarkan jumlah tetangga hidup di sekitarnya.
+
+Aturan yang digunakan:
+
+1. Sel hidup dengan 2 atau 3 tetangga tetap hidup.
+2. Sel hidup dengan kurang dari 2 tetangga akan mati.
+3. Sel hidup dengan lebih dari 3 tetangga akan mati.
+4. Sel mati dengan tepat 3 tetangga akan menjadi hidup.
+
+Algoritma Program
+
+1. Membuat grid menggunakan ADT Array dua dimensi.
+2. Menentukan kondisi awal sel hidup.
+3. Menghitung jumlah tetangga hidup untuk setiap sel.
+4. Membentuk generasi baru berdasarkan aturan Game of Life.
+5. Menampilkan hasil setiap generasi di layar.
+
+Kesimpulan
+ADT Array dapat digunakan untuk merepresentasikan struktur grid pada simulasi Game of Life. Dengan menerapkan aturan sederhana, simulasi dapat menunjukkan perubahan pola dari waktu ke waktu, seperti pola yang stabil, berosilasi, atau bergerak.
