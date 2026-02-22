@@ -1,0 +1,101 @@
+PENJELASAN PROGRAM
+Hash Table Premium+ (Linear Probing)
+
+1. Pendahuluan
+Program ini merupakan simulasi visual dari struktur data Hash Table dengan metode penanganan 
+collision menggunakan Linear Probing. Visualisasi dibuat menggunakan library matplotlib dan 
+dapat dikontrol menggunakan keyboard (pause, step, restart, dan quit)
+
+Hash Table adalah struktur data yang digunakan untuk menyimpan data dalam bentuk pasangan key 
+dan value, dengan tujuan agar proses pencarian, penyisipan, dan penghapusan dapat dilakukan 
+secara cepat (rata-rata O(1))
+
+2. Konsep Dasar Hash Table
+Hash Table bekerja dengan cara:
+   -Menggunakan fungsi hash untuk menentukan posisi penyimpanan data
+   -Menyimpan data pada indeks hasil perhitungan hash
+   -Jika terjadi tabrakan (collision), maka digunakan metode penyelesaian tertentu
+
+Pada program ini digunakan metode Linear Probing
+index = hash(key) % size
+Artinya:
+   -hash(key) menghasilkan angka unik
+   -% size memastikan indeks berada dalam rentang ukuran tabel
+
+
+3. Analogi Sederhana: Parkiran Mobil
+Untuk mempermudah pemahaman, Hash Table dapat dianalogikan sebagai parkiran mobil
+
+Slot parkir = bucket dalam hash table
+Mobil = data (key)
+Nomor slot parkir = hasil hash
+
+Contoh:
+Misalkan tersedia 5 slot parkir
+Kasus 1:
+Mobil A masuk
+Hasil hash menunjukkan slot 2
+Slot kosong → Mobil A parkir
+
+Kasus 2:
+Mobil B masuk
+Hasil hash juga menunjukkan slot 2
+Slot sudah terisi → terjadi collision
+Mobil B maju ke slot 3
+Slot 3 kosong → parkir di sana
+
+Kasus 3:
+Mobil C masuk
+Slot 2 dan 3 sudah penuh
+Mobil maju ke slot 4 → parkir
+Inilah yang disebut Linear Probing:
+Jika slot tujuan penuh, maka data akan bergerak satu per satu ke slot berikutnya sampai 
+menemukan slot kosong
+
+
+4. Penjelasan Bagian Program
+A. Fungsi plan_inserts()
+Fungsi ini bertugas untuk:
+  -Membuat tabel kosong sesuai ukuran
+  -Memasukkan key satu per satu
+  -Menghitung collision
+  -Menghitung load factor
+  -Menyimpan setiap tahap proses untuk ditampilkan dalam animasi
+start = hash(key) % size (Menentukan slot awal berdasarkan hash)
+while table[idx] is not None:
+    idx = (idx + 1) % size  (Jika slot penuh, pindah ke slot berikutnya (linear probing))
+
+B. Load Factor
+Load Factor adalah tingkat kepadatan tabel
+rumus : Load Factor = jumlah slot terisi / total slot
+Contoh jika tabel berukuran 10 dan 7 slot terisi: Load Factor = 7 / 10 = 0.7 (70%)
+Semakin tinggi load factor, semakin besar kemungkinan terjadi collision
+Dalam analogi parkiran:
+Semakin penuh parkiran, semakin sulit mencari tempat kosong
+
+C. Visualisasi (Matplotlib)
+Program menggunakan matplotlib untuk:
+  -Menampilkan kotak-kotak sebagai slot hash table
+  -Menampilkan isi setiap slot
+  -Menampilkan grafik Load Factor
+  -Mengatur animasi dengan FuncAnimation
+
+D. Kontrol Keyboard
+Program dapat dikontrol menggunakan:
+  -SPACE : Pause / Resume
+  -Panah kanan : Maju satu langkah
+  -Panah kiri : Mundur satu langkah
+  -R : Restart
+  -ESC / Q : Keluar
+Fitur ini membantu pengguna memahami proses hash table secara bertahap
+
+
+5. Kesimpulan
+Program ini menunjukkan bagaimana:
+  -Hash Table menyimpan data menggunakan fungsi hash.
+  -Collision terjadi ketika dua key memiliki indeks yang sama.
+  -Linear Probing digunakan untuk mencari slot kosong berikutnya.
+  -Load Factor mempengaruhi performa hash table.
+  -Visualisasi membantu memahami konsep struktur data secara interaktif.
+Dengan analogi parkiran mobil, konsep hash table menjadi lebih mudah dipahami, 
+terutama dalam memahami proses collision dan linear probing
