@@ -1,0 +1,39 @@
+Soal 1 — Modified Binary Search
+Algoritma ini digunakan untuk menghitung jumlah kemunculan suatu nilai dalam list yang sudah 
+terurut. Metode yang digunakan adalah binary search untuk menemukan posisi pertama dan terakhir 
+dari elemen yang dicari. Dengan cara ini jumlah kemunculan dapat dihitung secara efisien tanpa 
+memeriksa seluruh elemen pada list. Kompleksitas waktunya adalah O(log n) sehingga lebih cepat 
+dibandingkan pencarian linear.
+
+
+Soal 2 — Bubble Sort dengan Analisis
+Bubble sort bekerja dengan cara membandingkan dua elemen yang bersebelahan dan menukarnya 
+jika urutannya salah. Proses ini dilakukan berulang kali hingga seluruh data terurut. 
+Pada praktikum ini ditambahkan perhitungan jumlah perbandingan, jumlah pertukaran, dan jumlah pass. 
+Selain itu digunakan teknik early termination, sehingga jika data sudah terurut maka proses 
+sorting dapat berhenti lebih cepat.
+
+
+Soal 3 — Hybrid Sort
+Hybrid sort merupakan kombinasi dari dua algoritma sorting, yaitu insertion sort dan s
+selection sort. Algoritma ini memilih metode sorting berdasarkan ukuran data. Jika ukuran 
+data kecil maka digunakan insertion sort karena lebih efisien untuk data yang sedikit. 
+Jika ukuran data lebih besar maka digunakan selection sort. Pendekatan ini bertujuan 
+untuk meningkatkan efisiensi proses pengurutan.
+
+
+Soal 4 — Merge Tiga Sorted Lists
+Praktikum ini bertujuan untuk menggabungkan tiga list yang sudah terurut menjadi 
+satu list yang tetap terurut. Proses penggabungan dilakukan dengan membandingkan elemen 
+terkecil dari masing-masing list kemudian memasukkannya ke dalam list hasil. Proses ini 
+dilakukan berulang hingga semua elemen dari ketiga list habis. Metode ini mempertahankan 
+urutan data sehingga hasil akhirnya tetap terurut.
+
+
+Soal 5 — Inversion Counter
+Inversion merupakan pasangan indeks dalam array dimana elemen yang berada di depan memiliki 
+nilai lebih besar dibandingkan elemen yang berada di belakang. Jumlah inversion dapat 
+digunakan untuk mengetahui seberapa tidak terurut suatu data. Pada praktikum ini digunakan 
+dua metode yaitu metode naive yang memeriksa semua pasangan elemen dan metode merge sort 
+yang menghitung inversion selama proses penggabungan array. Metode merge sort lebih efisien 
+karena memiliki kompleksitas waktu yang lebih kecil.
