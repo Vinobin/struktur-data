@@ -1,0 +1,51 @@
+1. Big Integer dengan Linked List (1a)
+
+Program ini mengimplementasikan tipe data Big Integer menggunakan struktur Singly Linked List. 
+Setiap node pada linked list menyimpan satu digit angka.
+Pada saat user memasukkan angka, setiap digit akan dimasukkan ke dalam node secara berurutan. 
+Linked list digunakan untuk menyimpan bilangan yang sangat besar, sehingga tidak bergantung pada 
+batasan tipe data bawaan seperti int.
+
+Operasi yang dilakukan pada program ini adalah penjumlahan. Proses penjumlahan dilakukan 
+dengan cara:
+- Membalik angka terlebih dahulu
+- Menjumlahkan setiap digit dari belakang (seperti perhitungan manual)
+- Menyimpan hasil dalam bentuk linked list baru
+
+Keunggulan metode ini adalah fleksibel untuk bilangan besar, namun implementasinya lebih kompleks 
+dibandingkan list biasa.
+
+
+2. Big Integer dengan List (1b)
+
+Program ini menggunakan struktur data list Python untuk menyimpan digit angka. 
+Setiap digit disimpan dalam bentuk elemen list.
+
+Ketika user memasukkan angka:
+- Angka diubah menjadi list digit
+- Digit disimpan dalam urutan terbalik untuk memudahkan operasi
+
+Operasi penjumlahan dilakukan dengan:
+- Menjumlahkan digit per indeks
+- Menambahkan carry jika hasil lebih dari 9
+
+Metode ini lebih sederhana dan efisien dibandingkan linked list, karena Python sudah 
+menyediakan struktur list yang mudah digunakan.
+
+
+3. Assignment Operator (2)
+
+Program ini mengimplementasikan berbagai operasi aritmatika menggunakan operator seperti:
+
+- Penjumlahan (+)
+- Pengurangan (-)
+- Perkalian (*)
+- Pembagian (//)
+- Modulus (%)
+
+User dapat memilih operasi yang diinginkan melalui input. Program kemudian melakukan 
+operasi sesuai pilihan tersebut.
+Berbeda dengan dua bagian sebelumnya, pada bagian ini digunakan tipe data int 
+Python secara langsung untuk mempermudah perhitungan.
+Tujuan dari bagian ini adalah untuk memahami cara kerja operator dan bagaimana 
+mengimplementasikannya dalam program.
