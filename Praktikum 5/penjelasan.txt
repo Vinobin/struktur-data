@@ -1,0 +1,43 @@
+**PENJELASAN PROGRAM GAME MAZE DENGAN MULTI MUSUH**
+
+Program ini merupakan sebuah permainan sederhana berbasis terminal yang dibuat menggunakan 
+bahasa pemrograman Python. Tujuan dari permainan ini adalah agar pemain dapat menemukan jalan keluar
+(exit) dari sebuah labirin (maze) sambil menghindari musuh yang bergerak secara otomatis.
+
+Konsep utama yang digunakan dalam program ini adalah pembuatan maze secara acak 
+(random maze generation), pergerakan karakter secara real-time menggunakan input keyboard, serta 
+implementasi musuh yang dapat mengejar pemain.
+
+Maze atau labirin dibangun menggunakan algoritma recursive backtracking. Algoritma ini bekerja 
+dengan cara mengunjungi sel secara acak dan membuka jalur secara bertahap sehingga menghasilkan 
+pola labirin yang unik setiap kali program dijalankan. Dalam maze tersebut, simbol '#' digunakan 
+sebagai dinding, '.' sebagai jalan, 'P' sebagai pemain, 'E' sebagai titik tujuan (exit), dan 'M' 
+sebagai musuh.
+
+Pemain dapat menggerakkan karakter menggunakan tombol W, A, S, dan D untuk bergerak ke atas, kiri, 
+bawah, dan kanan. Sistem input yang digunakan bersifat real-time sehingga pemain tidak perlu 
+menekan tombol enter setiap kali melakukan pergerakan.
+
+Program juga dilengkapi dengan sistem skor yang dihitung berdasarkan jumlah langkah yang dilakukan 
+oleh pemain. Semakin sedikit langkah yang digunakan untuk mencapai tujuan, maka semakin baik skor 
+yang diperoleh.
+
+Selain itu, terdapat sistem nyawa (lives) yang berjumlah tiga. Setiap kali pemain tertangkap oleh 
+musuh, jumlah nyawa akan berkurang satu dan posisi pemain akan direset ke titik awal. Jika nyawa 
+habis, maka permainan akan berakhir (game over).
+
+Musuh dalam permainan ini berjumlah satu dan bergerak secara otomatis menggunakan thread terpisah. 
+Pergerakan musuh dilakukan dengan cara mendekati posisi pemain secara sederhana (greedy movement), 
+yaitu memilih arah yang mendekati posisi pemain. Hal ini membuat permainan menjadi lebih menantang 
+karena pemain harus terus bergerak dan menghindari kejaran musuh.
+
+Thread digunakan agar musuh dapat bergerak secara independen tanpa harus menunggu input dari pemain.
+Dengan demikian, permainan terasa lebih interaktif dan real-time.
+
+Program ini juga memanfaatkan library colorama untuk memberikan warna pada tampilan di terminal, 
+sehingga memudahkan pemain dalam membedakan elemen-elemen yang ada pada permainan.
+
+Secara keseluruhan, program ini menggabungkan beberapa konsep dasar dalam pemrograman seperti 
+struktur data (array/list), percabangan, perulangan, fungsi, serta pemrograman berbasis thread. 
+Program ini juga dapat dikembangkan lebih lanjut dengan menambahkan fitur seperti kecerdasan 
+buatan yang lebih kompleks, level permainan, maupun tampilan berbasis grafis.
