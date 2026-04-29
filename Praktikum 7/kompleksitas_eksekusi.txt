@@ -1,0 +1,52 @@
+LATIHAN BAB 8
+
+1. Kompleksitas Waktu (Worst Case)
+Pada class TicketCounterSimulation yang menggunakan struktur data Queue:
+- enqueue(x) : O(1)
+  (menambahkan elemen ke belakang queue)
+- dequeue() :
+  O(n) jika menggunakan list biasa
+  O(1) jika menggunakan linked list
+- isEmpty() : O(1)
+- size() : O(1)
+
+
+2. Eksekusi Manual Queue (enqueue saja)
+Kode:
+values = Queue()
+for i in range(16):
+    if i % 3 == 0:
+        values.enqueue(i)
+Bilangan dari 0 sampai 15 yang habis dibagi 3:
+0, 3, 6, 9, 12, 15
+Hasil queue (depan ke belakang):
+[0, 3, 6, 9, 12, 15]
+
+
+3. Eksekusi Manual Queue (enqueue dan dequeue)
+Kode:
+values = Queue()
+for i in range(16):
+    if i % 3 == 0:
+        values.enqueue(i)
+    elif i % 4 == 0:
+        values.dequeue()
+Proses:
+i=0  -> enqueue(0)      -> [0]
+i=1  -> -               -> [0]
+i=2  -> -               -> [0]
+i=3  -> enqueue(3)      -> [0, 3]
+i=4  -> dequeue()       -> [3]
+i=5  -> -               -> [3]
+i=6  -> enqueue(6)      -> [3, 6]
+i=7  -> -               -> [3, 6]
+i=8  -> dequeue()       -> [6]
+i=9  -> enqueue(9)      -> [6, 9]
+i=10 -> -               -> [6, 9]
+i=11 -> -               -> [6, 9]
+i=12 -> enqueue(12)     -> [6, 9, 12]
+i=13 -> -               -> [6, 9, 12]
+i=14 -> -               -> [6, 9, 12]
+i=15 -> enqueue(15)     -> [6, 9, 12, 15]
+Hasil akhir queue:
+[6, 9, 12, 15]
