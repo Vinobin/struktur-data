@@ -1,0 +1,268 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║        PENJELASAN STRUKTUR DATA — APLIKASI NOTE-TAKING              ║
+║        Mata Kuliah: Struktur Data & Algoritma                        ║
+╚══════════════════════════════════════════════════════════════════════╝
+ 
+Soal:
+"Rancang struktur data untuk aplikasi note-taking yang mendukung:
+  - Multiple tags per note (multi-linked by tag)
+  - Chronological dan alphabetical views (doubly linked sorted)
+  - Sync status tracking (circular buffer for recent changes)"
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GAMBARAN UMUM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+Aplikasi note-taking ini membutuhkan TIGA kemampuan utama sekaligus:
+  1. Satu note bisa punya banyak tag, dan dari satu tag bisa ditemukan
+     banyak note → butuh struktur MULTI-LINK.
+  2. Note bisa ditampilkan urut waktu (terbaru dulu) ATAU urut A-Z
+     → butuh dua SORTED LINKED LIST yang berbeda.
+  3. Perubahan terbaru perlu dilacak untuk keperluan sinkronisasi
+     → butuh struktur FIXED-SIZE yang efisien (circular buffer).
+ 
+Semua ini dikombinasikan dalam satu sistem terpadu (NoteManager).
+ 
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BAGIAN 1 — NoteNode (Unit Dasar)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+Setiap note direpresentasikan sebagai sebuah NODE yang menyimpan:
+ 
+  ┌─────────────────────────────────────────┐
+  │  NoteNode                               │
+  │─────────────────────────────────────────│
+  │  note_id    : string (unik)             │
+  │  title      : string                    │
+  │  content    : string                    │
+  │  tags       : list of string            │
+  │  created_at : datetime                  │
+  │  updated_at : datetime                  │
+  │  synced     : boolean                   │
+  │─────────────────────────────────────────│
+  │  prev_chrono / next_chrono  (pointer)   │ ← untuk linked list kronologis
+  │  prev_alpha  / next_alpha   (pointer)   │ ← untuk linked list alfabetis
+  └─────────────────────────────────────────┘
+ 
+Kenapa satu node punya DUA pasang pointer?
+→ Karena node yang SAMA harus bisa berada di DUA linked list berbeda
+  secara bersamaan (kronologis DAN alfabetis), tanpa duplikasi data.
+  Teknik ini disebut "multi-list node" atau "intrusive linked list".
+ 
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BAGIAN 2 — MULTIPLE TAGS (HashMap of Lists / Multi-Linked by Tag)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+Struktur yang digunakan: HashMap (dict) → setiap key adalah tag,
+value-nya adalah list dari NoteNode yang memiliki tag tersebut.
+ 
+  tag_index = {
+      "python"    : [NoteNode("Belajar Python"), NoteNode("OOP Lanjutan")],
+      "belajar"   : [NoteNode("Belajar Python"), NoteNode("Algoritma")],
+      "algoritma" : [NoteNode("Algoritma Sorting")],
+      "kerja"     : [NoteNode("Catatan Rapat")],
+  }
+ 
+Ilustrasi hubungan multi-link:
+ 
+  Note "Belajar Python"  ──tags──► "python" ──► [Note A, Note C]
+                          └──────► "belajar" ──► [Note A, Note B]
+ 
+  Note "Algoritma"       ──tags──► "algoritma" ──► [Note B]
+                          └──────► "belajar"   ──► [Note A, Note B]
+ 
+Keuntungan:
+  ✔ Mencari semua note dengan tag tertentu → O(1) (langsung ke index)
+  ✔ Satu note bisa punya banyak tag (many-to-many)
+  ✔ Satu tag bisa dimiliki banyak note
+ 
+Operasi:
+  - Tambah note dengan tag   → masukkan node ke tiap list tag-nya
+  - Update tag               → hapus dari list lama, tambah ke list baru
+  - Cari by tag              → tag_index["python"] langsung dapat list-nya
+ 
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BAGIAN 3 — CHRONOLOGICAL VIEW (Doubly Linked List)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+Struktur: Doubly Linked List, note terbaru selalu ada di HEAD (depan).
+ 
+  HEAD                                              TAIL
+   ↓                                                 ↓
+  [Note E] ⇄ [Note D] ⇄ [Note C] ⇄ [Note B] ⇄ [Note A]
+  (terbaru)                                    (terlama)
+ 
+  Setiap node terhubung dua arah:
+    next_chrono → menuju note yang lebih lama
+    prev_chrono → menuju note yang lebih baru
+ 
+Kenapa doubly (bukan singly)?
+  → Supaya bisa dihapus node di tengah tanpa harus traversal dari awal.
+    Jika ada pointer ke node yang ingin dihapus, operasi hapus = O(1).
+ 
+Operasi:
+  - Insert note baru   → sisipkan di HEAD          → O(1)
+  - Hapus note         → putus pointer prev & next  → O(1)
+  - Tampilkan urut waktu → traverse dari HEAD       → O(n)
+ 
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BAGIAN 4 — ALPHABETICAL VIEW (Doubly Linked List — Sorted Insert)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+Struktur: Doubly Linked List yang selalu dijaga urutan A-Z berdasarkan
+judul note pada saat insert.
+ 
+  HEAD                                              TAIL
+   ↓                                                 ↓
+  [Agenda] ⇄ [Belajar Python] ⇄ [Catatan Rapat] ⇄ [Resep]
+     A               B                  C               R
+ 
+Proses insert note "Catatan Rapat":
+  1. Mulai dari HEAD, bandingkan judul satu per satu.
+  2. "Catatan" > "Belajar" → lanjut ke next.
+  3. "Catatan" < "Resep"   → sisipkan di antara "Belajar" dan "Resep".
+  4. Hubungkan pointer prev_alpha dan next_alpha.
+ 
+  Sebelum: [Agenda] ⇄ [Belajar] ⇄ [Resep]
+  Setelah: [Agenda] ⇄ [Belajar] ⇄ [Catatan] ⇄ [Resep]
+ 
+Kasus khusus saat judul diubah (update):
+  → Node DIHAPUS dulu dari alpha list, lalu di-INSERT ulang
+    agar posisi alfabetisnya tepat.
+ 
+Operasi:
+  - Insert (sorted)    → O(n) — harus cari posisi yang benar
+  - Hapus              → O(1) — langsung via pointer
+  - Tampilkan A-Z      → O(n) — traverse dari HEAD
+ 
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BAGIAN 5 — SYNC STATUS TRACKING (Circular Buffer)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+Struktur: Array berukuran tetap (fixed-size) yang digunakan secara
+melingkar. Disebut "circular" karena setelah elemen terakhir, penulisan
+kembali ke indeks 0 (menimpa data paling lama).
+ 
+  Kapasitas = 5 (contoh), setelah 7x push:
+ 
+  Indeks:  [0]       [1]       [2]       [3]       [4]
+           Event-6   Event-7   Event-3   Event-4   Event-5
+                      ↑ HEAD (akan ditulis berikutnya di indeks 2)
+ 
+  Event-1 dan Event-2 sudah tertimpa (tidak diperlukan lagi).
+ 
+Cara kerja:
+  - `head` adalah pointer indeks tulis berikutnya.
+  - Setiap push: buffer[head] = event, lalu head = (head + 1) % capacity
+  - Untuk membaca terbaru: mundur dari (head - 1) % capacity
+ 
+Setiap event yang dicatat berisi:
+  {
+    "event"    : "CREATE" / "UPDATE" / "DELETE",
+    "note_id"  : "note_0001",
+    "timestamp": "2026-05-12T10:30:00",
+    "synced"   : True / False
+  }
+ 
+Keuntungan:
+  ✔ Memori tetap konstan — tidak peduli berapa banyak perubahan terjadi
+  ✔ Insert selalu O(1)
+  ✔ Tidak perlu alokasi/dealokasi memori dinamis
+  ✔ Sangat cocok untuk real-time tracking perubahan terakhir
+ 
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BAGIAN 6 — NoteManager (Komponen Utama / Orchestrator)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+NoteManager menyatukan semua struktur di atas:
+ 
+  ┌──────────────────────────────────────────────────────┐
+  │  NoteManager                                         │
+  │                                                      │
+  │  notes        : HashMap { note_id → NoteNode }       │
+  │  tag_index    : HashMap { tag → [NoteNode, ...] }    │
+  │  chrono_list  : ChronologicalList (doubly linked)    │
+  │  alpha_list   : AlphabeticalList  (doubly linked)    │
+  │  sync_buffer  : CircularBuffer                       │
+  └──────────────────────────────────────────────────────┘
+ 
+Alur saat add_note("Belajar Python", ..., tags=["python","belajar"]):
+  1. Buat NoteNode baru
+  2. Simpan ke notes["note_0001"] = node           ← HashMap
+  3. tag_index["python"].append(node)              ← Multi-link tag
+  4. tag_index["belajar"].append(node)             ← Multi-link tag
+  5. chrono_list.insert(node) → di HEAD            ← Chronological
+  6. alpha_list.insert(node)  → posisi A-Z         ← Alphabetical
+  7. sync_buffer.push({event: "CREATE", ...})      ← Circular Buffer
+ 
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RINGKASAN KOMPLEKSITAS WAKTU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+  Operasi                        Struktur           Kompleksitas
+  ─────────────────────────────────────────────────────────────
+  Tambah note baru               HashMap + DLL       O(n)*
+  Hapus note                     HashMap + DLL       O(1)
+  Cari note by ID                HashMap             O(1)
+  Cari note by tag               HashMap of Lists    O(1)
+  Tampilkan kronologis           Doubly Linked List  O(n)
+  Tampilkan alfabetis            Doubly Linked List  O(n)
+  Catat perubahan (sync)         Circular Buffer     O(1)
+  Baca perubahan terbaru         Circular Buffer     O(k)**
+ 
+  *  O(n) karena alpha list perlu cari posisi yang tepat
+  ** k = jumlah perubahan yang ingin dibaca (≤ kapasitas buffer)
+ 
+ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTOH OUTPUT PROGRAM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+  [+] Note ditambahkan: Note(id=note_0001, title='Belajar Python', tags=['python', 'belajar'])
+  [+] Note ditambahkan: Note(id=note_0002, title='Algoritma Sorting', tags=['algoritma', 'belajar'])
+  [+] Note ditambahkan: Note(id=note_0003, title='Catatan Rapat', tags=['kerja'])
+  [+] Note ditambahkan: Note(id=note_0004, title='Resep Nasi Goreng', tags=['masak', 'resep'])
+  [+] Note ditambahkan: Note(id=note_0005, title='Agenda Liburan', tags=['liburan', 'rencana'])
+ 
+  ── Notes dengan tag 'belajar' ──
+     → Note(id=note_0001, title='Belajar Python', ...)
+     → Note(id=note_0002, title='Algoritma Sorting', ...)
+ 
+  [~] Note diperbarui: Note(id=note_0001, title='Belajar Python & OOP', ...)
+  [✓] Note note_0002 ditandai synced.
+  [✓] Note note_0003 ditandai synced.
+  [-] Note dihapus: note_0004
+ 
+  ═══════════════════════════════════════════════════════
+    TAMPILAN KRONOLOGIS (Terbaru → Terlama)
+  ═══════════════════════════════════════════════════════
+    1. [✗] 'Agenda Liburan'         tags=['liburan', 'rencana']
+    2. [✗] 'Belajar Python & OOP'   tags=['python', 'belajar', 'oop']
+    3. [✓] 'Catatan Rapat'          tags=['kerja']
+    4. [✓] 'Algoritma Sorting'      tags=['algoritma', 'belajar']
+ 
+  ═══════════════════════════════════════════════════════
+    TAMPILAN ALFABETIS (A → Z)
+  ═══════════════════════════════════════════════════════
+    1. 'Agenda Liburan'          id=note_0005
+    2. 'Algoritma Sorting'       id=note_0002
+    3. 'Belajar Python & OOP'    id=note_0001
+    4. 'Catatan Rapat'           id=note_0003
+ 
+  ═══════════════════════════════════════════════════════
+    RECENT CHANGES (Circular Buffer)
+  ═══════════════════════════════════════════════════════
+    [DELETE] note_0004 @ 2026-05-12T10:31:05
+    [UPDATE] note_0001 @ 2026-05-12T10:31:05
+    [CREATE] note_0005 @ 2026-05-12T10:31:05
+    [CREATE] note_0004 @ 2026-05-12T10:31:04
+    [CREATE] note_0003 @ 2026-05-12T10:31:04
+    [CREATE] note_0002 @ 2026-05-12T10:31:04
+    [CREATE] note_0001 @ 2026-05-12T10:31:04
