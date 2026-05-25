@@ -1,0 +1,101 @@
+a. Ruang & Distribusi Sort
+
+Implementasi standar Radix Sort umumnya menggunakan array berisi 10 queue atau bucket untuk setiap 
+digit 0–9. Setiap bucket akan menyimpan elemen sementara sebelum dikembalikan lagi ke array utama. 
+Pada Modul A, data yang diproses mencapai 10⁶ bilangan bulat positif dan sistem hanya mengizinkan 
+alokasi ruang tambahan sebesar O(1). Penggunaan bucket tambahan pada Radix Sort menyebabkan 
+kebutuhan memori bertambah secara proporsional terhadap jumlah elemen yang diproses karena seluruh 
+data sementara harus ditempatkan ke queue sesuai digitnya. Akibatnya, kompleksitas ruang menjadi 
+O(n + k), dengan k adalah jumlah bucket. Karena terdapat penyimpanan tambahan yang bergantung pada 
+jumlah data, implementasi ini tidak memenuhi batasan O(1).
+
+Berbeda dengan Radix Sort, Improved Merge Sort menggunakan satu tmpArray tunggal yang dialokasikan 
+sekali di awal proses sorting. Pada implementasi berbasis slice, setiap rekursi biasanya membuat 
+subarray baru sehingga alokasi memori terus bertambah di setiap pemanggilan fungsi. Pendekatan 
+virtual sublists pada Improved Merge Sort tidak membuat subarray fisik, melainkan hanya menggunakan 
+indeks first, mid, dan last untuk menandai batas sublist di dalam array yang sama. tmpArray 
+digunakan ulang selama seluruh proses merge sehingga overhead memori jauh lebih kecil dibandingkan 
+versi slice-based.
+
+Jika tetap ingin memanfaatkan distribusi digit seperti pada Radix Sort namun tidak melanggar 
+batasan O(1), strategi yang paling realistis adalah menggunakan In-Place Radix Sort atau American 
+Flag Sort. Pendekatan ini melakukan distribusi elemen langsung di dalam array tanpa bucket tambahan 
+besar. Namun konsekuensinya adalah implementasi menjadi lebih kompleks karena memerlukan proses 
+swap berulang dan pengaturan posisi elemen secara hati-hati. Kompleksitas waktunya tetap mendekati 
+O(dn), tetapi konstanta waktunya meningkat akibat banyaknya operasi swap dan perhitungan indeks.
+
+
+b. Linked List & Pointer Manipulation
+
+Pada linked list, Merge Sort lebih unggul dibanding implementasi array karena proses pemisahan 
+dan penggabungan dapat dilakukan hanya dengan manipulasi pointer tanpa perlu memindahkan seluruh 
+data secara fisik. Fungsi _splitLinkedList() menggunakan teknik fast-slow pointer untuk menemukan 
+titik tengah hanya dalam satu traversal.
+Pointer midPoint bergerak satu langkah setiap iterasi, sedangkan curNode bergerak dua langkah 
+sekaligus. Ketika curNode mencapai akhir list, midPoint otomatis berada di tengah list. 
+Dengan cara ini, algoritma tidak perlu menghitung panjang linked list terlebih dahulu.
+
+Contohnya:
+midPoint = head
+curNode = head.next
+selama curNode dan curNode.next masih ada:
+midPoint bergerak 1 langkah
+curNode bergerak 2 langkah
+
+Setelah loop selesai:
+right_head = midPoint.next
+midPoint.next = None
+
+Operasi tersebut memutus linked list menjadi dua bagian tanpa membuat node baru.
+Pada proses merge, fungsi _mergeLinkedLists() menggunakan dummy node dan tail reference. 
+Dummy node hanya berfungsi sebagai titik awal sementara agar proses penyambungan lebih mudah. 
+Pointer tail selalu menunjuk node terakhir hasil merge. Ketika membandingkan dua node:
+jika listA.data <= listB.data, maka tail.next menunjuk listA
+jika tidak, tail.next menunjuk listB
+Kemudian tail maju ke node berikutnya.
+Karena node lama langsung digunakan kembali dan hanya pointer .next yang diubah, 
+tidak ada alokasi node tambahan selama proses merge. Oleh sebab itu kompleksitas ruang 
+tambahan turun menjadi O(log n), yang hanya berasal dari stack rekursi Merge Sort.
+
+c. Quick Sort Worst-Case & Pivot Strategy
+
+Jika Quick Sort diterapkan pada data descending dan pivot selalu dipilih dari elemen pertama, 
+maka pivot akan menjadi elemen terbesar pada setiap partisi. Dalam fungsi partitionSeq(), 
+pointer left bergerak dari kiri ke kanan mencari elemen yang lebih besar dari pivot, sedangkan 
+pointer right bergerak dari kanan ke kiri mencari elemen yang lebih kecil.
+Karena pivot adalah elemen terbesar:
+pointer left terus bergerak hingga akhir array
+pointer right hampir tidak bergerak
+partisi menjadi sangat tidak seimbang
+
+Akibatnya, satu subarray memiliki ukuran n−1 sedangkan subarray lainnya kosong. Rekursi terus 
+berulang dengan ukuran berkurang satu demi satu sehingga kedalaman rekursi mencapai O(n).
+
+Pola rekursi menjadi:
+n + (n−1) + (n−2) + ... + 1
+Sehingga total kompleksitas waktu berubah menjadi O(n²).
+Strategi pivot yang lebih robust adalah:
+Median-of-Three Pivot dipilih dari median elemen pertama, tengah, dan terakhir.
+Random Pivot Pivot dipilih secara acak untuk mengurangi kemungkinan worst-case.
+Introsort Strategy Menggunakan Quick Sort terlebih dahulu, lalu beralih ke Heap Sort atau 
+Merge Sort jika kedalaman rekursi terlalu besar.
+Untuk singly linked list, strategi median-of-three kurang efisien karena akses elemen tengah 
+memerlukan traversal O(n). Linked list tidak mendukung random access seperti array. Oleh karena 
+itu Merge Sort jauh lebih cocok untuk linked list karena hanya membutuhkan manipulasi pointer 
+tanpa akses indeks langsung.
+
+d. Batas Teoretis & Paradigma Sorting
+
+Lower bound Ω(n log n) berlaku khusus untuk comparison-based sorting, yaitu algoritma yang 
+menentukan urutan hanya berdasarkan operasi perbandingan antar elemen.
+Radix Sort tidak melanggar batas tersebut karena algoritma ini bukan comparison sort. Radix Sort 
+mengelompokkan elemen berdasarkan digit atau karakter tertentu tanpa membandingkan seluruh nilai 
+secara langsung.
+Dua asumsi penting yang membuat Radix Sort dapat mencapai O(dn) adalah:
+Jumlah digit (d) terbatas dan relatif kecil.
+Rentang nilai digit atau karakter (k) juga terbatas.
+Sebagai contoh, digit desimal hanya memiliki 10 kemungkinan nilai yaitu 0–9.
+Jika d dan k dianggap konstan, maka kompleksitas O(dn) menjadi mendekati linear terhadap jumlah data.
+Namun jika jumlah digit sangat besar atau domain nilai tidak terbatas, maka performa Radix Sort 
+dapat menurun drastis dan kebutuhan memorinya juga meningkat. Oleh karena itu Radix Sort hanya 
+efektif pada domain data tertentu yang memiliki struktur digit tetap atau terbatas.

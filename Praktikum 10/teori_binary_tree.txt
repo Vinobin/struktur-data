@@ -1,0 +1,101 @@
+a. Pohon Ekspresi & Traversal
+
+Ekspresi:((8∗5)+(9/(7−4)))
+Fungsi _buildTree() membangun pohon ekspresi menggunakan antrian token secara rekursif.
+Langkah-langkah:
+1.Token pertama “(” menandakan awal subtree.
+2.Fungsi rekursif dipanggil untuk membangun subtree kiri.
+3.Operand 8 menjadi leaf node.
+4.Token “*” menjadi root subtree.
+5.Operand 5 menjadi subtree kanan.
+6.Subtree (8 * 5) selesai.
+7.Token “+” menjadi root utama.
+8.Fungsi membangun subtree kanan yaitu (9 / (7 - 4)).
+9.Operator “/” menjadi root subtree kanan.
+10.Node 9 menjadi child kiri.
+11.Subtree (7 - 4) dibangun secara rekursif.
+12.Operator “-” menjadi parent dengan child 7 dan 4.
+Traversal postorder otomatis menghasilkan postfix karena urutan kunjungan adalah:kiri - kanan- root
+Urutan tersebut sesuai dengan format postfix.
+Sedangkan inorder menghasilkan format: kiri - root - kanan
+Tanpa tanda kurung tambahan, prioritas operasi dapat menjadi ambigu sehingga Listing 13.7 
+memerlukan penanganan tanda kurung eksplisit.
+Jika pohon memiliki tinggi: h
+maka kedalaman maksimum stack rekursi pada _buildString() adalah: O(h) karena setiap pemanggilan 
+rekursif mengikuti tinggi pohon.
+
+
+b. Struktur Heap & Pemetaan Array
+
+Rumus indeks:
+parent=(i−1)//2
+left=2i+1
+right=2i+2
+hanya valid jika heap memenuhi properti complete binary tree.
+Pada complete binary tree:
+seluruh level terisi penuh kecuali level terakhir node pada level terakhir diisi dari kiri ke kanan
+tidak terdapat “lubang” indeks
+Karena struktur pohon tersusun rapat, setiap node dapat dipetakan langsung ke indeks array 
+tanpa memerlukan pointer tambahan.
+Jika tree tidak complete, beberapa indeks menjadi kosong sehingga relasi parent-child tidak 
+lagi konsisten dan pemetaan array menjadi tidak valid.
+Setelah ekstraksi akar pada heap:
+-Root ditukar dengan elemen terakhir.
+-Ukuran heap dikurangi.
+-Elemen baru di root dapat melanggar heap order property.
+-Fungsi sift-down() membandingkan node dengan child terbesar.
+-Jika child lebih besar, dilakukan swap.
+-Proses dilanjutkan hingga posisi valid ditemukan.
+
+Pada heap berukuran: n
+tinggi maksimum heap adalah:log2(n)
+pada setiap level dilakukan maksimal dua perbandingan sehingga jumlah operasi perbandingan 
+maksimum dalam satu sift-down() adalah:2log2(n)
+Kompleksitas waktunya menjadi: O(logn)
+
+
+c. Heapsort In-Place vs Simple
+
+Simple heapsort biasanya menggunakan struktur heap tambahan sehingga membutuhkan ruang ekstra 
+sebesar: O(n) karena data harus disimpan kembali pada struktur heap terpisah sebelum proses 
+sorting dilakukan.
+Sebaliknya, in-place heapsort menggunakan array yang sama sebagai heap sekaligus tempat hasil 
+sorting sehingga hanya membutuhkan ruang tambahan: O(1) karena tidak melakukan alokasi array 
+baru selama proses sorting.
+Dari sisi pola akses memori, simple heapsort memiliki locality cache yang lebih buruk karena 
+data dapat tersebar pada area memori berbeda. Hal ini menyebabkan CPU cache lebih sering 
+melakukan reload data.
+In-place heapsort bekerja langsung pada array yang sama sehingga akses data lebih terprediksi 
+dan locality cache menjadi lebih baik. Pendekatan ini lebih sesuai digunakan pada sistem embedded 
+dengan cache kecil dan RAM terbatas.
+Pada sistem dengan RAM terbatas, simple heapsort lebih berisiko menyebabkan overflow memori 
+karena membutuhkan struktur heap tambahan sebesar ukuran data.
+Sebaliknya, in-place heapsort jauh lebih aman karena seluruh proses berlangsung pada array asli 
+tanpa alokasi memori besar tambahan.
+Walaupun in-place heapsort melakukan banyak operasi swap pada array yang sama, kompleksitas 
+waktunya tetap:O(nlogn)
+karena:
+proses build heap memerlukan:O(n)
+setiap ekstraksi root memerlukan sift-down() sebesar:O(logn)
+ekstraksi dilakukan sebanyak:n kali
+Sehingga total kompleksitasnya menjadi:O(n)+n(O(logn))=O(nlogn)
+
+
+d. Batas Teoretis & Decision Tree
+
+Heapsort tidak melanggar lower bound:Ω(nlogn)karena algoritma ini tetap termasuk comparison-based 
+sorting. Walaupun menggunakan struktur heap berbentuk pohon, proses utama heapsort tetap 
+bergantung pada operasi perbandingan antar elemen ketika membangun heap maupun saat melakukan 
+sift-down() setelah ekstraksi root.
+Dalam teori decision tree, setiap perbandingan elemen direpresentasikan sebagai percabangan 
+pada pohon keputusan. Untuk membedakan seluruh kemungkinan urutan data sebanyak: n!
+diperlukan tinggi pohon minimal sebesar:log2(n!) yang berdasarkan Stirling Approximation setara 
+dengan: Ω(nlogn) Oleh karena itu heapsort tetap berada pada batas teoritis comparison sort.
+Pada decision tree seperti decoding Morse Code, null link digunakan untuk mendeteksi token tidak 
+valid. Jika traversal mencapai pointer None sebelum seluruh token selesai diproses, berarti 
+kombinasi simbol tersebut tidak memiliki representasi yang sah pada pohon keputusan.
+Pendekatan rekursif lebih cocok digunakan karena struktur tree bersifat hierarkis dan setiap 
+subtree memiliki pola pemrosesan yang sama dengan tree utama.
+Selain itu, traversal preorder, inorder, maupun postorder secara alami mengikuti struktur 
+rekursif pohon sehingga implementasinya menjadi lebih sederhana dibanding pendekatan iteratif 
+yang memerlukan pengelolaan stack manual.
